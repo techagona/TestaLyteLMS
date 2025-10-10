@@ -22,6 +22,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
+import { useSignOut } from "@/hooks/use-signout";
 
 interface UserDropdownProps {
   name: string;
@@ -32,19 +33,7 @@ interface UserDropdownProps {
 export function UserDropdown({ name, email, image }: UserDropdownProps) {
   const router = useRouter();
 
-  async function signOut() {
-    await authClient.signOut({
-      fetchOptions: {
-        onSuccess: () => {
-          router.push("/");
-          toast.success("Signed out successfully");
-        },
-        onError: () => {
-          toast.error("Failed to sign out...");
-        },
-      },
-    });
-  }
+  const { signOut } = useSignOut();
 
   return (
     <DropdownMenu>
