@@ -9,9 +9,6 @@ export default function Home() {
     <>
       <section className="relative py-20">
         <div className="flex flex-col items-center text-center space-y-8">
-          <Badge variant={"outline"} className="p-2 rounded-full">
-            The Future of Online Education.
-          </Badge>
           <h1 className="text-4xl md:text-6xl font-bold tracking-tight">
             Elevate Your Learning Experience
           </h1>
