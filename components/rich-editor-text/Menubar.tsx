@@ -1,4 +1,5 @@
 import { type Editor } from "@tiptap/react";
+import React, { useEffect, useState } from "react";
 import {
   Tooltip,
   TooltipContent,
@@ -31,22 +32,44 @@ interface iAppProps {
 export function Menubar({ editor }: iAppProps) {
   if (!editor) return null;
 
+  // local active state so we don't re-render the entire parent form on each editor transaction
+  const [isBold, setIsBold] = useState(false);
+  const [isItalic, setIsItalic] = useState(false);
+  const [isStrike, setIsStrike] = useState(false);
+
+  useEffect(() => {
+    const update = () => {
+      setIsBold(editor.isActive("bold"));
+      setIsItalic(editor.isActive("italic"));
+      setIsStrike(editor.isActive("strike"));
+    };
+
+    // update immediately
+    update();
+
+    // subscribe to selectionUpdate and transaction to keep toolbar state in sync
+    editor.on("selectionUpdate", update);
+    editor.on("transaction", update);
+
+    return () => {
+      editor.off("selectionUpdate", update);
+      editor.off("transaction", update);
+    };
+  }, [editor]);
+
   return (
-    <div className="border border-input rounded-t-lg gap-1 flex flex-wrap items-center bg-card p-2 ">
+    <div className="border border-input border-x-0 border-t-0 rounded-t-lg gap-1 flex flex-wrap items-center bg-card p-2 ">
       <TooltipProvider>
         <div className="gap-1">
           <Tooltip>
             <TooltipTrigger asChild>
               <Toggle
                 size="sm"
-                pressed={editor.isActive("bold")}
+                pressed={isBold}
                 onPressedChange={(pressed: boolean) => {
-                  // run the toggle command when the toggle state changes
                   editor.chain().focus().toggleBold().run();
                 }}
-                className={cn(
-                  editor.isActive("bold") && "bg-muted text-muted-foreground"
-                )}
+                className={cn(isBold && "bg-muted text-muted-foreground")}
               >
                 <Bold />
               </Toggle>
@@ -57,14 +80,11 @@ export function Menubar({ editor }: iAppProps) {
             <TooltipTrigger asChild>
               <Toggle
                 size="sm"
-                pressed={editor.isActive("italic")}
+                pressed={isItalic}
                 onPressedChange={() => {
-                  // run the toggle command when the toggle state changes
                   editor.chain().focus().toggleItalic().run();
                 }}
-                className={cn(
-                  editor.isActive("italic") && "bg-muted text-muted-foreground"
-                )}
+                className={cn(isItalic && "bg-muted text-muted-foreground")}
               >
                 <Italic />
               </Toggle>
@@ -75,14 +95,11 @@ export function Menubar({ editor }: iAppProps) {
             <TooltipTrigger asChild>
               <Toggle
                 size="sm"
-                pressed={editor.isActive("strike")}
+                pressed={isStrike}
                 onPressedChange={() => {
-                  // run the toggle command when the toggle state changes
                   editor.chain().focus().toggleStrike().run();
                 }}
-                className={cn(
-                  editor.isActive("strike") && "bg-muted text-muted-foreground"
-                )}
+                className={cn(isStrike && "bg-muted text-muted-foreground")}
               >
                 <Strikethrough />
               </Toggle>
