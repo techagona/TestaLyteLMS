@@ -39,7 +39,7 @@ export async function DELETE(request: Request) {
 
     if (!key) {
       NextResponse.json(
-        { error: "Missing or Invalid Object key here" },
+        { error: "Missing or Invalid Object key" },
         { status: 400 }
       );
     }
