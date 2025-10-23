@@ -3,3 +3,8 @@ interface featuresProps {
   description: string;
   icon: string;
 }
+
+export type ApiResponse = {
+  status: "success" | "error";
+  message: string;
+};
