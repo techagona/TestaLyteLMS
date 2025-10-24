@@ -35,16 +35,9 @@ export async function CreateCourse(
 
     if (decision.isDenied()) {
       if (decision.reason.isRateLimit()) {
-        return {
-          status: "error",
-          message: "You have been blocked due to rate limiting",
-        };
-      } else {
-        return {
-          status: "error",
-          message: "looks like you are a malicious user!!!!!",
-        };
+        return { status: "error", message: "Rate limited. Try again shortly." };
       }
+      return { status: "error", message: "Access denied." };
     }
     const validation = courseSchema.safeParse(values);
 

@@ -21,7 +21,7 @@ const aj = arcjet
   );
 
 export async function DELETE(request: Request) {
-  const session = await requireAdmin();
+  const session = await requireAdmin({ onFail: "json" });
 
   try {
     const decision = await aj.protect(request, {
