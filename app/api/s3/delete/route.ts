@@ -38,7 +38,7 @@ export async function DELETE(request: Request) {
     const key = body.key;
 
     if (!key) {
-      NextResponse.json(
+      return NextResponse.json(
         { error: "Missing or Invalid Object key" },
         { status: 400 }
       );

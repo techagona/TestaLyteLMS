@@ -70,6 +70,8 @@ export function Uploader({ value, onChange }: iAppProps) {
           uploading: false,
           error: true,
         }));
+
+        return;
       }
 
       const { presignedUrl, key } = await presignedResponse.json();
