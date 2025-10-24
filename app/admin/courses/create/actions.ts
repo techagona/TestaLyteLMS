@@ -1,17 +1,44 @@
 "use server";
-import { auth } from "@/lib/auth";
+import { requireAdmin } from "@/app/data/admin/require-admin";
+import arcjet, { detectBot, fixedWindow } from "@/lib/arcjet";
 import { prisma } from "@/lib/db";
 import { courseSchema, courseSchemaType } from "@/lib/zodSchemas";
 import { ApiResponse } from "@/types";
-import { headers } from "next/headers";
+import { request } from "@arcjet/next";
+import { NextResponse } from "next/server";
+
+const aj = arcjet
+  .withRule(
+    detectBot({
+      mode: "LIVE",
+      allow: [],
+    })
+  )
+  .withRule(
+    fixedWindow({
+      mode: "LIVE",
+      max: 5,
+      window: "1m",
+    })
+  );
 
 export async function CreateCourse(
   values: courseSchemaType
 ): Promise<ApiResponse> {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const session = await requireAdmin();
+
   try {
+    const req = await request();
+    const decision = await aj.protect(req, {
+      fingerprint: session?.user.id as string,
+    });
+
+    if (decision.isDenied()) {
+      if (decision.reason.isRateLimit()) {
+        return { status: "error", message: "Rate limited. Try again shortly." };
+      }
+      return { status: "error", message: "Access denied." };
+    }
     const validation = courseSchema.safeParse(values);
 
     if (!validation.success) {
