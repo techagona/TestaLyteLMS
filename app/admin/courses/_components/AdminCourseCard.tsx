@@ -9,7 +9,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useConstructUrl } from "@/hooks/use-construct-url";
-import { env } from "@/lib/env";
 
 import {
   ArrowRight,
